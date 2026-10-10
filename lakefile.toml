@@ -10,6 +10,12 @@ weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
 
 [[require]]
+name = "DensityHalesJewett"
+git = "https://github.com/gdahia/DensityHalesJewett"
+rev = "99f452f53919c143b5fa7a71d57d0b173639696b"
+
+# Keep Mathlib last so that its pin takes precedence.
+[[require]]
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.35.0-rc4"

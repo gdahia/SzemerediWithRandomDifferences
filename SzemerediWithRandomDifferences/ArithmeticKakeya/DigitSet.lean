@@ -6,6 +6,8 @@ Authors: Gabriel Dahia
 module
 
 public import Mathlib.Data.Finset.NAry
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Numbers with digits in a given set
@@ -34,24 +36,48 @@ def digitSet (Q : ℕ) (S : Finset ℕ) : ℕ → Finset ℕ
   | t + 1 => image₂ (fun s a ↦ s + Q * a) S (digitSet Q S t)
 
 @[simp]
-theorem digitSet_zero (Q : ℕ) (S : Finset ℕ) : digitSet Q S 0 = {0} := by
+lemma digitSet_zero (Q : ℕ) (S : Finset ℕ) : digitSet Q S 0 = {0} := by
   rfl
 
 @[simp]
-theorem digitSet_succ (Q : ℕ) (S : Finset ℕ) (t : ℕ) :
+lemma digitSet_succ (Q : ℕ) (S : Finset ℕ) (t : ℕ) :
     digitSet Q S (t + 1) = image₂ (fun s a ↦ s + Q * a) S (digitSet Q S t) := by
   rfl
 
-theorem card_digitSet_le (Q : ℕ) (S : Finset ℕ) (t : ℕ) : #(digitSet Q S t) ≤ #S ^ t := by
-  sorry
+lemma card_digitSet_le (Q : ℕ) (S : Finset ℕ) (t : ℕ) : #(digitSet Q S t) ≤ #S ^ t := by
+  induction t with
+  | zero => simp
+  | succ t ih =>
+    rw [digitSet_succ, pow_succ']
+    exact (card_image₂_le _ _ _).trans (Nat.mul_le_mul_left _ ih)
 
-theorem add_le_of_mem_digitSet {Q k : ℕ} {S : Finset ℕ} (hS : ∀ s ∈ S, s + k ≤ k * Q) {t a : ℕ}
+lemma add_le_of_mem_digitSet {Q k : ℕ} {S : Finset ℕ} (hS : ∀ s ∈ S, s + k ≤ k * Q) {t a : ℕ}
     (ha : a ∈ digitSet Q S t) : a + k ≤ k * Q ^ t := by
-  sorry
+  induction t generalizing a with
+  | zero => simp_all
+  | succ t ih =>
+    obtain ⟨s, hs, b, hb, rfl⟩ := mem_image₂.1 ha
+    rw [pow_succ]
+    linarith [hS s hs, Nat.mul_le_mul_left Q (ih hb)]
 
-theorem exists_forall_add_mul_mem_digitSet {Q k : ℕ} {S : Finset ℕ}
+lemma exists_forall_add_mul_mem_digitSet {Q k : ℕ} {S : Finset ℕ}
     (hS : ∀ d < Q, ∃ a, ∀ j < k, a + j * d ∈ S) (t : ℕ) :
     ∀ d < Q ^ t, ∃ a, ∀ j < k, a + j * d ∈ digitSet Q S t := by
-  sorry
+  induction t with
+  | zero =>
+    intro d hd
+    use 0
+    simp_all
+  | succ t ih =>
+    intro d hd
+    have hQ : 0 < Q := (pow_pos_iff t.succ_ne_zero).1 (Nat.zero_lt_of_lt hd)
+    rw [pow_succ'] at hd
+    obtain ⟨a₀, h₀⟩ := hS (d % Q) (Nat.mod_lt _ hQ)
+    obtain ⟨a₁, h₁⟩ := ih (d / Q) (Nat.div_lt_of_lt_mul hd)
+    use a₀ + Q * a₁
+    intro j hj
+    rw [digitSet_succ, mem_image₂]
+    refine ⟨_, h₀ j hj, _, h₁ j hj, ?_⟩
+    linear_combination j * Nat.mod_add_div d Q
 
 end ArithmeticKakeya

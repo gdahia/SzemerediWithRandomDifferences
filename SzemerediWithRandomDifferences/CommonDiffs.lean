@@ -1,0 +1,52 @@
+/-
+Copyright (c) 2026 Gabriel Dahia. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Gabriel Dahia
+-/
+module
+
+public import DensityHalesJewett.Szemeredi
+
+/-!
+# Common differences of the arithmetic progressions in a set
+
+`Combinatorics.ArithmeticProgression.commonDiffs k S` is the set of common differences of the
+`k`-term arithmetic progressions with nonzero common difference contained in `S`. As for
+`Combinatorics.ArithmeticProgression.IsSubset`, `S` is a set, a finset, or any other collection
+with a membership relation.
+-/
+
+@[expose] public section
+
+namespace Combinatorics.ArithmeticProgression
+
+variable {α β γ : Type*} [AddMonoid α] [Membership α β] [Membership α γ]
+
+/-- The common differences of the `k`-term arithmetic progressions contained in `S`. -/
+def commonDiffs (k : ℕ) (S : β) : Set α :=
+  {d | ∃ P : ArithmeticProgression α k, P.diff = d ∧ P.IsSubset S}
+
+lemma commonDiffs_mono (k : ℕ) {S : β} {T : γ} (h : ∀ x ∈ S, x ∈ T) :
+    commonDiffs k S ⊆ commonDiffs k T := by
+  rintro d ⟨P, rfl, hP⟩
+  refine ⟨P, rfl, ?_⟩
+  intro i
+  exact h _ (hP i)
+
+lemma mem_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {d : ℕ} :
+    d ∈ commonDiffs k S ↔ d ≠ 0 ∧ ∃ a, ∀ i < k, a + i * d ∈ S := by
+  constructor
+  · rintro ⟨P, rfl, hP⟩
+    refine ⟨P.diff_ne_zero, P.start, ?_⟩
+    intro i hi
+    simpa [term] using hP ⟨i, hi⟩
+  · rintro ⟨hd, a, ha⟩
+    refine ⟨⟨a, d, hd⟩, rfl, ?_⟩
+    intro i
+    simpa [term] using ha i i.2
+
+lemma disjoint_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {D : Set ℕ} :
+    Disjoint (commonDiffs k S) D ↔ ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S := by
+  simp [Set.disjoint_right, mem_commonDiffs_nat]
+
+end Combinatorics.ArithmeticProgression

@@ -12,8 +12,8 @@ public import Mathlib.NumberTheory.PrimeCounting
 # Parameters of the Green–Ruzsa construction
 
 The modulus, the constant in the exponent and the threshold for `n` that appear in the
-statement of `ArithmeticKakeya.exists_subset_Icc_card_le_rpow`, together with the bound on the
-size of the base set used in its proof.
+statement of `ArithmeticKakeya.exists_card_le_rpow_forall_exists_arithmeticProgression`, together
+with the bound on the size of the base set used in its proof.
 -/
 
 @[expose] public section
@@ -40,7 +40,7 @@ With `Q = modulus k` and `B = sizeBound k`, the construction has size at most
 for every `k ≥ 4`. -/
 noncomputable def c : ℝ := 1 / 100
 
-theorem c_pos : 0 < c := by
+lemma c_pos : 0 < c := by
   norm_num [c]
 
 /-- A threshold for `n` in the Green–Ruzsa bound for progressions of length `k`.
