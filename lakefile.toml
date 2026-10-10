@@ -1,0 +1,29 @@
+name = "SzemerediWithRandomDifferences"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["SzemerediWithRandomDifferences", "Challenge", "Solution"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.35.0-rc4"
+
+# The full proof development; `Solution.lean` imports it.
+[[lean_lib]]
+name = "SzemerediWithRandomDifferences"
+
+# The small statement-only surface a reader audits.
+[[lean_lib]]
+name = "Challenge"
+roots = ["Challenge"]
+
+# Proves the declarations stated in `Challenge.lean`; Comparator checks the two agree.
+[[lean_lib]]
+name = "Solution"
+roots = ["Solution"]

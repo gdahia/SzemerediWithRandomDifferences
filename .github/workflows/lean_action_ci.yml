@@ -1,0 +1,44 @@
+name: Lean Action CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read # Read access to repository contents
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+
+  metadata:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check formalization.yaml
+        run: ruby scripts/validate-formalization.rb
+      - name: Check Lean source requirements
+        run: python3 scripts/check-lean-sources.py
+
+  comparator:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+      - name: Install bubblewrap for lake comparator's sandbox
+        # Ubuntu restricts unprivileged user namespaces through AppArmor, which `bwrap` needs.
+        run: |
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq bubblewrap >/dev/null
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Run lake comparator
+        run: ./scripts/verify-comparator.sh
