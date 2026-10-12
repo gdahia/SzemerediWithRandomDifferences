@@ -24,14 +24,13 @@ classification:
   msc2020: ["11B25", "11B30", "05D40"]
 
 sources:
-  - title: "Szemerédi's theorem with random differences and Arithmetic Kakeya"
+  - title: "Szemerédi's theorem with random differences and arithmetic Kakeya"
     authors:
       - "Gabriel Dahia"
     type: "preprint"
     relationship: "formalizes"
     note: >-
-      Theorem 1.1 and Lemma 1.2. The preprint is not yet public. See fidelity.divergences
-      for the differences from it.
+      Theorem 1.1 and Lemma 1.2. See fidelity.divergences for the differences from it.
     license: "unknown"
     author_endorsement: "participated"
   - title: "On the arithmetic Kakeya conjecture of Katz and Tao"
@@ -96,36 +95,14 @@ automation:
 
 fidelity:
   divergences: >-
-    Theorem 1.1. The probability is that of the event that some S ⊆ {1, …, n} with
-    |S| ≥ δn has no k-term progression with common difference in D, where D has law
-    setBernoulli({1, …, n}, p(n)). The hypothesis on p is required for all large n. The
-    proof bounds the probability by (kQ + 1) n exp(-2 n^(1 - c / log log k)), with
-    C = 3 / γ.
-
-    Lemma 1.2. The family has at most (kQ + 1) n exp(n^(1 - c / log log k)) members, and
-    the common differences of a fingerprint are counted inside {1, …, n}. The constant is
-    γ = ε(δ/2, k) / (kQ + 1), where ε is the constant in Varnavides' theorem; the density
-    δ/2 appears because that theorem is stated for subsets of {0, …, n}. Translation by
-    negative integers is avoided: the fingerprints are images of subsets of the
-    Green–Ruzsa set under y ↦ y + n - u with u < (kQ + 1) n.
+    Lemma 1.2. The members of the family are not required to be subsets of {1, …, n}, and
+    the common differences of a fingerprint are counted inside {1, …, n}.
 
     Green–Ruzsa. The paper states Theorem 1.2 as a bound on the limit of
     log F_k(N) / log N. The Lean statement is the finite bound #Y ≤ n^(1 - c / log log k)
     for n ≥ n₀(k), with c = 1/100 and n₀(k) = Q^(⌈10 log log k⌉ + 100), where Q is the
     product of the first ⌈10 log k⌉ odd primes as in the paper. The set lies in
     {1, …, kQn}.
-
-    The paper proves #S ≤ Q^(1 - c / log log k) for large k from the bound
-    ∏ (1 + 1/p) ≪ log m. The Lean proof covers every k ≥ 3. It uses 2p / (p + 1) ≥ 7/4 for
-    p ≥ 7 to get B k³ ≤ Q, where B = k² ∏ (p + 1)/2, and the bound pₙ ≤ (n + 2)², derived
-    from Chebyshev's estimate in Mathlib, to get log Q ≤ 22 log k (log log k + 13/5). The
-    case k = 3 uses the values Q = 3710369067405 and B = 44677785600.
-
-    The paper absorbs a factor of Q into an implied constant depending on k. The Lean proof
-    absorbs it using n ≥ n₀(k).
-
-    The starting point of the progression of difference d is the residue of d² in
-    {0, …, Q - 1} rather than {1, …, Q}, and the final set is shifted by one.
 
 review:
   status: "partially reviewed"
