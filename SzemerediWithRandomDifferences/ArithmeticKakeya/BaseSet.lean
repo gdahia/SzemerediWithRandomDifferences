@@ -33,7 +33,7 @@ open Finset
 /-- The base set of the Green–Ruzsa construction: the numbers `d ^ 2 % Q + j * d` with `d < Q`
 and `j < k`. -/
 def baseSet (Q k : ℕ) : Finset ℕ :=
-  (range Q ×ˢ range k).image fun x ↦ x.1 ^ 2 % Q + x.2 * x.1
+  (range Q ×ˢ range k).image fun (d, j) ↦ d ^ 2 % Q + j * d
 
 lemma mem_baseSet {Q k s : ℕ} :
     s ∈ baseSet Q k ↔ ∃ d < Q, ∃ j < k, d ^ 2 % Q + j * d = s := by
@@ -45,9 +45,8 @@ lemma add_mul_mem_baseSet {Q k d j : ℕ} (hd : d < Q) (hj : j < k) :
   mem_baseSet.2 ⟨d, hd, j, hj, rfl⟩
 
 /-- The base set contains a `k`-term progression with every common difference below `Q`. -/
-lemma exists_forall_add_mul_mem_baseSet (Q k : ℕ) :
-    ∀ d < Q, ∃ a, ∀ j < k, a + j * d ∈ baseSet Q k := by
-  intro d hd
+lemma exists_forall_add_mul_mem_baseSet {Q d : ℕ} (k : ℕ) (hd : d < Q) :
+    ∃ a, ∀ j < k, a + j * d ∈ baseSet Q k := by
   use d ^ 2 % Q
   intro j hj
   exact add_mul_mem_baseSet hd hj

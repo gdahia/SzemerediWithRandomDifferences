@@ -121,7 +121,7 @@ lemma card_residues_mul_le {m n : ℕ} (hmn : m.Coprime n) (j : ℕ) :
     exact ((Nat.modEq_and_modEq_iff_modEq_mul hmn).1 hab).eq_of_lt_of_lt
       (Nat.mod_lt _ (Nat.mul_pos hm hn)) (Nat.mod_lt _ (Nat.mul_pos hm hn))
 
-lemma card_residues_prod_le {ι : Type*} (s : Finset ι) (q : ι → ℕ)
+lemma card_residues_prod_le {ι : Type*} {s : Finset ι} {q : ι → ℕ}
     (hq : (s : Set ι).Pairwise (Function.onFun Nat.Coprime q)) (j : ℕ) :
     #(residues (∏ i ∈ s, q i) j) ≤ ∏ i ∈ s, #(residues (q i) j) := by
   classical

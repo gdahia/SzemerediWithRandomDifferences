@@ -19,9 +19,13 @@ import SzemerediWithRandomDifferences.ArithmeticKakeya.Threshold
 Small sets of natural numbers containing a `k`-term arithmetic progression with every common
 difference in an initial segment. Progressions are `Combinatorics.ArithmeticProgression ℕ k`.
 
-The statement is Theorem 1.2 of Green and Ruzsa, *On the arithmetic Kakeya conjecture of Katz
-and Tao*, [arXiv:1712.02108](https://arxiv.org/abs/1712.02108), in the form given by the
-construction in Section 5 of that paper.
+The statement is a theorem of Green and Ruzsa, *On the arithmetic Kakeya conjecture of Katz
+and Tao*, in the form given by the construction in Section 5 of the arXiv version. It is
+Theorem 1.2 of the arXiv version, [arXiv:1712.02108](https://arxiv.org/abs/1712.02108), and
+Theorem 1.7 of the published version, Period. Math. Hungar. (2019),
+[doi:10.1007/s10998-018-0270-z](https://doi.org/10.1007/s10998-018-0270-z). It is Theorem 2.2
+of Dahia, *Szemerédi's theorem with random differences and arithmetic Kakeya*,
+[arXiv:2610.18859](https://arxiv.org/abs/2610.18859), which cites the published version.
 
 Let `Q` be the product of the first `⌈10 * log k⌉` odd primes. For `d < Q`, take the
 progression starting at the residue of `d ^ 2` modulo `Q`, and let `S` be the union of these
@@ -48,7 +52,8 @@ namespace ArithmeticKakeya
 
 open Combinatorics Finset
 
-/-- **Green–Ruzsa**, Theorem 1.2. For `k ≥ 3` and `n ≥ n₀ k`, some `Y ⊆ {1, …, k * Q * n}`
+/-- **Green–Ruzsa**, Theorem 1.2 of the arXiv version and Theorem 1.7 of the published version.
+For `k ≥ 3` and `n ≥ n₀ k`, some `Y ⊆ {1, …, k * Q * n}`
 with `#Y ≤ n ^ (1 - c / log (log k))` contains a `k`-term arithmetic progression with every
 common difference `d ∈ {1, …, n}`, where `Q = modulus k`. -/
 theorem exists_card_le_rpow_forall_exists_arithmeticProgression {k : ℕ} (hk : 3 ≤ k) {n : ℕ}

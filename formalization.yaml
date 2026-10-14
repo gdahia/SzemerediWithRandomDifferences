@@ -4,9 +4,11 @@ version: "v0.4"
 project:
   name: "Szemerédi's theorem with random differences"
   description: >-
-    Lean 4 formalization of a threshold for Szemerédi's theorem with random differences.
-    There is c > 0 such that, for k ≥ 3, δ > 0 and p ≥ C n^(-c / log log k), a p-random set
-    D of differences in {1, …, n} has the following property with probability tending to 1:
+    Lean 4 formalization of the main result of the preprint "Szemerédi's theorem with random
+    differences and arithmetic Kakeya" by Gabriel Dahia (arXiv:2610.18859), a threshold for
+    Szemerédi's theorem with random differences. For c = 1/100, k ≥ 3, δ > 0 and p ≥ C n^(-c / log log k), where C is a value of the
+    Ackermann function depending on k and δ, a p-random set D of differences in {1, …, n}
+    has the following property with probability at least 1 - exp(-n^(1 - c / log log k)):
     every subset of {1, …, n} with at least δn elements contains a k-term arithmetic
     progression with common difference in D. The proof uses the Green–Ruzsa construction of
     small sets containing a progression with every common difference, which is also
@@ -27,11 +29,14 @@ sources:
   - title: "Szemerédi's theorem with random differences and arithmetic Kakeya"
     authors:
       - "Gabriel Dahia"
+    id: "arXiv:2610.18859"
     type: "preprint"
+    location: "Theorem 1.1 and Lemma 1.2"
     relationship: "formalizes"
     note: >-
-      Theorem 1.1 and Lemma 1.2. See fidelity.divergences for the differences from it.
-    license: "unknown"
+      The preprint whose main result this project formalizes, posted at
+      https://arxiv.org/abs/2610.18859. See fidelity.divergences for the differences from it.
+    license: "CC-BY-4.0"
     author_endorsement: "participated"
   - title: "On the arithmetic Kakeya conjecture of Katz and Tao"
     authors:
@@ -39,11 +44,13 @@ sources:
       - "Imre Z. Ruzsa"
     id: "arXiv:1712.02108"
     type: "article"
-    location: "https://arxiv.org/abs/1712.02108"
+    location: "Theorem 1.2 and Section 5"
     relationship: "formalizes"
     note: >-
-      The construction of Section 5, which proves Theorem 1.2. See fidelity.divergences for
-      the differences from the paper.
+      The construction of Section 5, which proves Theorem 1.2. The numbering is that of the
+      arXiv version; the result is Theorem 1.7 of the published version, Period. Math.
+      Hungar. (2019), doi:10.1007/s10998-018-0270-z, which the preprint cites. See
+      fidelity.divergences for the differences from the paper.
     license: "unknown"
     author_endorsement: "not-contacted"
 
@@ -52,12 +59,14 @@ related_formalizations:
     relationship: "builds-on"
     note: >-
       A Lake dependency. It provides the structure ArithmeticProgression and Varnavides'
-      theorem, Combinatorics.ArithmeticProgression.exists_many_of_density_nat.
+      theorem with an Ackermann bound,
+      Combinatorics.ArithmeticProgression.exists_many_of_density_nat.
 
 status:
   scope: >-
-    The project proves Theorem 1.1 of the preprint, the fingerprint lemma (Lemma 1.2), and
-    Theorem 1.2 of Green and Ruzsa in a finite form with explicit constants. Varnavides'
+    The project proves Theorem 1.1 of the preprint, the covering lemma (Lemma 1.2), and
+    the theorem of Green and Ruzsa (Theorem 1.2 of the arXiv version, Theorem 1.7 of the
+    published version) in a finite form with explicit constants. Varnavides'
     theorem is taken from the DensityHalesJewett project. The random set of differences is
     Mathlib's setBernoulli measure. The project does not define F_k(N) or state the
     Green–Ruzsa theorem as a limit, and does not formalize the other results of that paper.
@@ -95,10 +104,16 @@ automation:
 
 fidelity:
   divergences: >-
-    Lemma 1.2. The members of the family are not required to be subsets of {1, …, n}, and
-    the common differences of a fingerprint are counted inside {1, …, n}.
+    Theorem 1.1. The paper asserts that some c > 0 and some C = C(k, δ) work. The Lean
+    statement has c = 1/100 and C = ack(4k + 2, k + ⌈2/δ⌉), where ack is the Ackermann
+    function. The paper states that the property holds with high probability. The Lean
+    statement bounds the failure probability by exp(-n^(1 - c / log log k)) for every n.
 
-    Green–Ruzsa. The paper states Theorem 1.2 as a bound on the limit of
+    Lemma 1.2. The members of the family are not required to be subsets of {1, …, n}, and
+    the common differences of a member are counted inside {1, …, n}.
+
+    Green–Ruzsa. The paper states its theorem (Theorem 1.2 of the arXiv version, Theorem 1.7
+    of the published version) as a bound on the limit of
     log F_k(N) / log N. The Lean statement is the finite bound #Y ≤ n^(1 - c / log log k)
     for n ≥ n₀(k), with c = 1/100 and n₀(k) = Q^(⌈10 log log k⌉ + 100), where Q is the
     product of the first ⌈10 log k⌉ odd primes as in the paper. The set lies in
@@ -116,14 +131,14 @@ alignment:
   namespace: "RandomDifferences"
   statements:
     - source: "Theorem 1.1"
-      lean: "RandomDifferences.exists_forall_tendsto_setBernoulli_exists_forall_exists_notMem"
-    - source: "Theorem 1.1, with explicit constants"
-      lean: "RandomDifferences.tendsto_setBernoulli_isAvoidable"
+      lean: "RandomDifferences.szemeredi_setBernoulli_exists_avoiding_le_exp"
+    - source: "Theorem 1.1, stated with IsAvoidable"
+      lean: "RandomDifferences.setBernoulli_isAvoidable_le_exp"
     - source: "Lemma 1.2"
-      lean: "RandomDifferences.exists_card_le_forall_exists_subset_forall_le_ncard"
+      lean: "RandomDifferences.exists_isCover_card_le"
     - source: "Theorem 2.1 (Varnavides)"
       lean: "Combinatorics.ArithmeticProgression.exists_many_of_density_nat"
-    - source: "Theorem 2.2 (Green–Ruzsa, Theorem 1.2)"
+    - source: "Theorem 2.2 (Green–Ruzsa, Theorem 1.2 of arXiv:1712.02108, Theorem 1.7 of the published version)"
       lean: "ArithmeticKakeya.exists_card_le_rpow_forall_exists_arithmeticProgression"
     - source: "Green–Ruzsa, Section 5, the set A_n"
       lean: "ArithmeticKakeya.exists_card_le_pow_forall_exists_arithmeticProgression"

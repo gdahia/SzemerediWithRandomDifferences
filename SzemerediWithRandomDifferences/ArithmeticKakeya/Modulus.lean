@@ -23,6 +23,7 @@ Bounds relating `modulus k`, the product of the first `⌈10 * log k⌉` odd pri
 * `ArithmeticKakeya.sizeBound_mul_pow_le_modulus`: `sizeBound k * k ^ 3 ≤ modulus k`.
 * `Nat.nth_prime_le_add_two_sq`: the prime of index `n` is at most `(n + 2) ^ 2`.
 * `ArithmeticKakeya.log_modulus_le`: `log (modulus k) ≤ 22 * log k * (log (log k) + 13 / 5)`.
+* `ArithmeticKakeya.modulus_le`: `modulus k ≤ ((10 * k + 2) ^ 2) ^ (10 * k)`.
 -/
 
 public section
@@ -94,7 +95,7 @@ private lemma nth_prime_succ_le_sq {i m : ℕ} (hi : i < m) :
 private lemma prod_range_eleven_nth_prime (f : ℕ → ℕ) :
     ∏ i ∈ range 11, f (Nat.nth Nat.Prime (i + 1)) =
       f 3 * f 5 * f 7 * f 11 * f 13 * f 17 * f 19 * f 23 * f 29 * f 31 * f 37 := by
-  simp only [prod_range_succ, prod_range_zero, one_mul, Nat.reduceAdd,
+  simp [prod_range_succ,
     nth_prime_eq 1 3 (by decide) (by decide), nth_prime_eq 2 5 (by decide) (by decide),
     nth_prime_eq 3 7 (by decide) (by decide), nth_prime_eq 4 11 (by decide) (by decide),
     nth_prime_eq 5 13 (by decide) (by decide), nth_prime_eq 6 17 (by decide) (by decide),
@@ -127,7 +128,7 @@ lemma card_residues_modulus_le (k j : ℕ) :
     #(residues (modulus k) j) ≤
       ∏ i ∈ range ⌈10 * Real.log k⌉₊, (Nat.nth Nat.Prime (i + 1) + 1) / 2 := by
   rw [modulus]
-  refine (card_residues_prod_le _ _ ?_ j).trans (prod_le_prod ?_)
+  refine (card_residues_prod_le ?_ j).trans (prod_le_prod ?_)
   · intro a _ b _ hab
     exact (Nat.coprime_primes (Nat.prime_nth_prime _) (Nat.prime_nth_prime _)).2
       ((Nat.nth_injective Nat.infinite_setOfPred_prime).ne (by grind))
@@ -238,6 +239,16 @@ lemma log_modulus_le {k : ℕ} (hk : 3 ≤ k) :
       linarith [log_nth_prime_succ_le (mem_range.1 hi), log_ceil_add_two_le hL]
   · intro i _
     exact mod_cast (Nat.prime_nth_prime _).ne_zero
+
+/-- A crude bound on the modulus, with no logarithm. -/
+lemma modulus_le (k : ℕ) : modulus k ≤ ((10 * k + 2) ^ 2) ^ (10 * k) := by
+  have hr : ⌈10 * Real.log k⌉₊ ≤ 10 * k := by
+    rw [Nat.ceil_le, Nat.cast_mul, Nat.cast_ofNat]
+    exact mul_le_mul_of_nonneg_left (Real.log_le_self (Nat.cast_nonneg k)) (by norm_num)
+  apply (prod_le_prod fun i hi ↦ nth_prime_succ_le_sq (mem_range.1 hi)).trans
+  rw [prod_const, card_range]
+  apply (Nat.pow_le_pow_right (by positivity) hr).trans
+  exact Nat.pow_le_pow_left (Nat.pow_le_pow_left (by grind) 2) _
 
 /-! ### The case `k = 3` -/
 

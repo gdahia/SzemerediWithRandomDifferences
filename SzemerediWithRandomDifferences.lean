@@ -1,5 +1,6 @@
 module
 
+public import SzemerediWithRandomDifferences.Ackermann
 public import SzemerediWithRandomDifferences.ArithmeticKakeya
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.BaseSet
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.Construction
@@ -9,7 +10,7 @@ public import SzemerediWithRandomDifferences.ArithmeticKakeya.Parameters
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.Residues
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.Threshold
 public import SzemerediWithRandomDifferences.CommonDiffs
-public import SzemerediWithRandomDifferences.Fingerprint
+public import SzemerediWithRandomDifferences.Cover
 public import SzemerediWithRandomDifferences.RandomDifferences
 public import SzemerediWithRandomDifferences.SetBernoulli
 public import SzemerediWithRandomDifferences.Translate

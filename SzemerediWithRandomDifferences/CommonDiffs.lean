@@ -43,7 +43,7 @@ lemma mem_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {d
   · rintro ⟨hd, a, ha⟩
     refine ⟨⟨a, d, hd⟩, rfl, ?_⟩
     intro i
-    simpa [term] using ha i i.2
+    simpa [term] using ha i i.isLt
 
 lemma disjoint_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {D : Set ℕ} :
     Disjoint (commonDiffs k S) D ↔ ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S := by

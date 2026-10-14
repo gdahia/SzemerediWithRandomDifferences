@@ -6,13 +6,18 @@ Authors: Gabriel Dahia
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Computability.Ackermann
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 /-!
 # Szemerédi's theorem with random differences
 
-The threshold `p ≥ C * n ^ (-c / log (log k))` for Szemerédi's theorem with random differences.
-This module imports Mathlib alone; the proof is supplied by the companion `Solution` module.
+The threshold `p ≥ C * n ^ (-c / log (log k))` for Szemerédi's theorem with random differences,
+with `c = 1 / 100` and `C` a value of the Ackermann function `ack`. This is Theorem 1.1 of
+Dahia, *Szemerédi's theorem with random differences and arithmetic Kakeya*,
+[arXiv:2610.18859](https://arxiv.org/abs/2610.18859), with explicit constants. No lower bound on
+`n` is assumed, since `p ≤ 1` forces `n ≥ C`. This module imports Mathlib alone and the proof is
+in the companion `Solution` module.
 
 The random set of differences is Mathlib's `setBer(Set.Icc 1 n, p)`, the distribution of the
 subset of `{1, …, n}` that contains each element independently with probability `p`. A `k`-term
@@ -22,22 +27,26 @@ arithmetic progression with first term `a` and common difference `d ≠ 0` consi
 
 @[expose] public section
 
-open Filter Finset ProbabilityTheory unitInterval
-open scoped Topology
+open Finset ProbabilityTheory unitInterval
 
 namespace RandomDifferences
 
-/-- **Szemerédi's theorem with random differences.** There is `c > 0` such that for every
-`k ≥ 3` and `δ > 0` there is `C > 0` with the following property. Let `D` be a `p n`-random
-subset of `{1, …, n}`, where `p n ≥ C * n ^ (-c / log (log k))` for all large `n`. The probability
+/-- The constant in the exponent of the threshold. -/
+noncomputable def c : ℝ := 1 / 100
+
+/-- The constant in the threshold for progressions of length `k` in sets of density `δ`. -/
+noncomputable def C (k : ℕ) (δ : ℝ) : ℝ := ack (4 * k + 2) (k + ⌈2 / δ⌉₊)
+
+/-- **Szemerédi's theorem with random differences.** Let `k ≥ 3` and `δ > 0`, and let `D` be a
+`p`-random subset of `{1, …, n}`, where `p ≥ C k δ * n ^ (-c / log (log k))`. The probability
 that some subset of `{1, …, n}` with at least `δ * n` elements contains no `k`-term arithmetic
-progression with common difference in `D` tends to `0` as `n` tends to infinity. -/
-theorem exists_forall_tendsto_setBernoulli_exists_forall_exists_notMem :
-    ∃ c > (0 : ℝ), ∀ k ≥ (3 : ℕ), ∀ δ > (0 : ℝ), ∃ C > (0 : ℝ), ∀ p : ℕ → I,
-      (∀ᶠ n : ℕ in atTop, C * (n : ℝ) ^ (-c / Real.log (Real.log k)) ≤ p n) →
-      Tendsto (fun n ↦ setBer(Set.Icc 1 n, p n)
-        {D | ∃ S : Finset ℕ, S ⊆ Icc 1 n ∧ δ * n ≤ #S ∧
-          ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S}) atTop (𝓝 0) :=
+progression with common difference in `D` is at most `exp (-n ^ (1 - c / log (log k)))`. -/
+theorem szemeredi_setBernoulli_exists_avoiding_le_exp {k : ℕ} (hk : 3 ≤ k) {δ : ℝ} (hδ : 0 < δ)
+    {n : ℕ} {p : I} (hp : C k δ * n ^ (-c / Real.log (Real.log k)) ≤ p) :
+    setBer(Set.Icc 1 n, p)
+      {D | ∃ S : Finset ℕ, S ⊆ Icc 1 n ∧ δ * n ≤ #S ∧
+        ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S} ≤
+      ENNReal.ofReal (Real.exp (-n ^ (1 - c / Real.log (Real.log k)))) :=
   sorry
 
 end RandomDifferences

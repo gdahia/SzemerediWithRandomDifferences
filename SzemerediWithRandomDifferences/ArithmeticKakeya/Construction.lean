@@ -48,13 +48,13 @@ lemma exists_card_le_pow_forall_exists_arithmeticProgression {Q k r : ℕ} (hk :
     apply (card_digitSet_le Q _ t).trans
     exact Nat.pow_le_pow_left (card_baseSet_le hr) t
   · intro d hd
-    rw [mem_Ioo] at hd
+    obtain ⟨hd0, hd⟩ := mem_Ioo.1 hd
     obtain ⟨a, ha⟩ :=
-      exists_forall_add_mul_mem_digitSet (exists_forall_add_mul_mem_baseSet Q k) t d hd.2
-    refine ⟨⟨a + 1, d, hd.1.ne'⟩, rfl, ?_⟩
+      exists_forall_add_mul_mem_digitSet (fun _ ↦ exists_forall_add_mul_mem_baseSet k) hd
+    refine ⟨⟨a + 1, d, hd0.ne'⟩, rfl, ?_⟩
     intro i
     rw [mem_image]
-    refine ⟨a + i * d, ha i i.2, ?_⟩
+    refine ⟨a + i * d, ha i i.isLt, ?_⟩
     simp only [ArithmeticProgression.term, nsmul_eq_mul, Nat.cast_id]
     ring
 
@@ -68,7 +68,7 @@ lemma exists_card_le_pow_log_forall_exists_arithmeticProgression {Q k r n : ℕ}
   · rw [pow_succ, mul_assoc, mul_comm Q n]
     exact Nat.mul_le_mul_left _ (Nat.mul_le_mul_right _ (Nat.pow_log_le_self Q hn))
   · intro d hd
-    rw [mem_Icc] at hd
-    exact hAP d (mem_Ioo.2 ⟨hd.1, hd.2.trans_lt (Nat.lt_pow_succ_log_self hQ n)⟩)
+    obtain ⟨hd1, hdn⟩ := mem_Icc.1 hd
+    exact hAP d (mem_Ioo.2 ⟨hd1, hdn.trans_lt (Nat.lt_pow_succ_log_self hQ n)⟩)
 
 end ArithmeticKakeya

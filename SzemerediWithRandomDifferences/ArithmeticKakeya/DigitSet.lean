@@ -61,19 +61,17 @@ lemma add_le_of_mem_digitSet {Q k : ℕ} {S : Finset ℕ} (hS : ∀ s ∈ S, s +
     linarith [hS s hs, Nat.mul_le_mul_left Q (ih hb)]
 
 lemma exists_forall_add_mul_mem_digitSet {Q k : ℕ} {S : Finset ℕ}
-    (hS : ∀ d < Q, ∃ a, ∀ j < k, a + j * d ∈ S) (t : ℕ) :
-    ∀ d < Q ^ t, ∃ a, ∀ j < k, a + j * d ∈ digitSet Q S t := by
-  induction t with
+    (hS : ∀ d < Q, ∃ a, ∀ j < k, a + j * d ∈ S) {t d : ℕ} (hd : d < Q ^ t) :
+    ∃ a, ∀ j < k, a + j * d ∈ digitSet Q S t := by
+  induction t generalizing d with
   | zero =>
-    intro d hd
     use 0
     simp_all
   | succ t ih =>
-    intro d hd
     have hQ : 0 < Q := (pow_pos_iff t.succ_ne_zero).1 (Nat.zero_lt_of_lt hd)
     rw [pow_succ'] at hd
     obtain ⟨a₀, h₀⟩ := hS (d % Q) (Nat.mod_lt _ hQ)
-    obtain ⟨a₁, h₁⟩ := ih (d / Q) (Nat.div_lt_of_lt_mul hd)
+    obtain ⟨a₁, h₁⟩ := ih (Nat.div_lt_of_lt_mul hd)
     use a₀ + Q * a₁
     intro j hj
     rw [digitSet_succ, mem_image₂]

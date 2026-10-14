@@ -110,10 +110,8 @@ private lemma log_sizeBound_three_div_le :
 lemma one_le_mul_saving_three :
     1 ≤ ((⌈10 * Real.log (Real.log 3)⌉₊ + 100 : ℕ) : ℝ) *
       (1 - Real.log (sizeBound 3) / Real.log (modulus 3) - c / Real.log (Real.log 3)) := by
-  have hll := le_log_log_three
-  have hc : c / Real.log (Real.log 3) ≤ 12 / 100 := by
-    rw [c, div_le_iff₀ (by linarith)]
-    linarith
+  have hc := c_div_log_log_le (le_refl 3)
+  rw [Nat.cast_ofNat] at hc
   rw [Nat.cast_add, Nat.cast_ofNat]
   refine le_trans (by norm_num : (1 : ℝ) ≤ 100 * (3 / 100)) (mul_le_mul ?_ ?_ ?_ ?_)
   · linarith [Nat.cast_nonneg (α := ℝ) ⌈10 * Real.log (Real.log 3)⌉₊]
