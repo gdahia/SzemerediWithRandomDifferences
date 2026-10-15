@@ -5,6 +5,7 @@ Authors: Gabriel Dahia
 -/
 module
 
+public import Mathlib.Data.Finset.Union
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.Residues
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Int.CardIntervalMod

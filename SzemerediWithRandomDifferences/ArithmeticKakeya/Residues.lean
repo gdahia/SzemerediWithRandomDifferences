@@ -5,8 +5,9 @@ Authors: Gabriel Dahia
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.Nat.GCD.BigOperators

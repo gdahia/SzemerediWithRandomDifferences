@@ -7,8 +7,10 @@ module
 
 public import DensityHalesJewett.Szemeredi
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 public import SzemerediWithRandomDifferences.ArithmeticKakeya.Parameters
+public import SzemerediWithRandomDifferences.CommonDiffs
 import SzemerediWithRandomDifferences.ArithmeticKakeya.Construction
 import SzemerediWithRandomDifferences.ArithmeticKakeya.Modulus
 import SzemerediWithRandomDifferences.ArithmeticKakeya.Threshold
@@ -44,6 +46,8 @@ The parameters `modulus`, `c` and `n₀` are defined in
 * `ArithmeticKakeya.exists_card_le_rpow_forall_exists_arithmeticProgression`: for `k ≥ 3` and
   `n ≥ n₀ k`, a subset of `{1, …, k * Q * n}` of size at most `n ^ (1 - c / log (log k))` with
   a `k`-term progression of every common difference in `{1, …, n}`.
+* `ArithmeticKakeya.exists_card_le_rpow_forall_mem_commonDiffs`: the same set in `ℤ`, with its
+  common differences stated through `Combinatorics.ArithmeticProgression.commonDiffs`.
 -/
 
 public section
@@ -72,5 +76,22 @@ theorem exists_card_le_rpow_forall_exists_arithmeticProgression {k : ℕ} (hk : 
   rw [Nat.cast_pow]
   apply (pow_log_succ_le_mul_rpow (sizeBound_ne_zero hk0) hQ hn0).trans
   exact mul_rpow_le_rpow_of_pow_le (sizeBound_le_modulus hk0) hQ (one_le_mul_saving hk) hn
+
+/-- The Green–Ruzsa theorem for sets of integers: for `k ≥ 3` and `n ≥ n₀ k`, some
+`Y ⊆ {1, …, k * Q * n}` with `#Y ≤ n ^ (1 - c / log (log k))` contains a `k`-term arithmetic
+progression with every common difference `d ∈ {1, …, n}`, where `Q = modulus k`. -/
+lemma exists_card_le_rpow_forall_mem_commonDiffs {k : ℕ} (hk : 3 ≤ k) {n : ℕ}
+    (hn : n₀ k ≤ n) :
+    ∃ Y : Finset ℤ, Y ⊆ Icc 1 ((k * modulus k * n : ℕ) : ℤ) ∧
+      #Y ≤ (n : ℝ) ^ (1 - c / Real.log (Real.log k)) ∧
+      ∀ d ∈ Icc 1 (n : ℤ), d ∈ ArithmeticProgression.commonDiffs k Y := by
+  obtain ⟨Y, hYM, hcard, hY⟩ := exists_card_le_rpow_forall_exists_arithmeticProgression hk hn
+  refine ⟨Y.map Nat.castEmbedding, ?_, by rwa [card_map], ?_⟩
+  · intro x hx
+    obtain ⟨y, hy, rfl⟩ := mem_map.1 hx
+    grind [hYM hy, Nat.castEmbedding_apply]
+  · intro d hd
+    lift d to ℕ using (by grind)
+    exact ArithmeticProgression.natCast_mem_commonDiffs_map (hY d (by grind))
 
 end ArithmeticKakeya

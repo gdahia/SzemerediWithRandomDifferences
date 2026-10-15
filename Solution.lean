@@ -5,7 +5,10 @@ Authors: Gabriel Dahia
 -/
 module
 
-public import SzemerediWithRandomDifferences.RandomDifferences
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Computability.Ackermann
+public import Mathlib.Probability.Distributions.SetBernoulli
+import SzemerediWithRandomDifferences.RandomDifferences
 
 /-!
 # Proof of Szemerédi's theorem with random differences
@@ -15,8 +18,9 @@ This module proves the declaration stated in `Challenge.lean`, Theorem 1.1 of Da
 [arXiv:2610.18859](https://arxiv.org/abs/2610.18859), deriving it from
 `RandomDifferences.setBernoulli_isAvoidable_le_exp`. The constant `c` is `ArithmeticKakeya.c`.
 
-The random set of differences is Mathlib's `setBer(Set.Icc 1 n, p)`, the distribution of the
-subset of `{1, …, n}` that contains each element independently with probability `p`. A `k`-term
+Sets of numbers are sets of integers. The random set of differences is Mathlib's
+`setBer(Set.Icc 1 (n : ℤ), p)`, the distribution of the subset of `{1, …, n}` that contains each
+element independently with probability `p`. A `k`-term
 arithmetic progression with first term `a` and common difference `d ≠ 0` consists of the numbers
 `a + i * d` for `i < k`.
 -/
@@ -39,8 +43,8 @@ that some subset of `{1, …, n}` with at least `δ * n` elements contains no `k
 progression with common difference in `D` is at most `exp (-n ^ (1 - c / log (log k)))`. -/
 theorem szemeredi_setBernoulli_exists_avoiding_le_exp {k : ℕ} (hk : 3 ≤ k) {δ : ℝ} (hδ : 0 < δ)
     {n : ℕ} {p : I} (hp : C k δ * n ^ (-c / Real.log (Real.log k)) ≤ p) :
-    setBer(Set.Icc 1 n, p)
-      {D | ∃ S : Finset ℕ, S ⊆ Icc 1 n ∧ δ * n ≤ #S ∧
+    setBer(Set.Icc 1 (n : ℤ), p)
+      {D | ∃ S : Finset ℤ, S ⊆ Icc 1 (n : ℤ) ∧ δ * n ≤ #S ∧
         ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S} ≤
       ENNReal.ofReal (Real.exp (-n ^ (1 - c / Real.log (Real.log k)))) := by
   simp only [← isAvoidable_iff]

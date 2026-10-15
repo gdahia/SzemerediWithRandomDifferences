@@ -6,7 +6,7 @@ Authors: Gabriel Dahia
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.NumberTheory.PrimeCounting
+public import Mathlib.Data.Nat.Nth
 
 /-!
 # Parameters of the Green–Ruzsa construction

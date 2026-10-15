@@ -5,93 +5,66 @@ Authors: Gabriel Dahia
 -/
 module
 
-public import DensityHalesJewett.Varnavides
-public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Data.Set.Card
 public import SzemerediWithRandomDifferences.CommonDiffs
+public import SzemerediWithRandomDifferences.Progressions
 import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Translates of a set with a progression of every difference
 
-Let `Y ⊆ {1, …, M}` contain a `k`-term arithmetic progression with every common difference in
-`{1, …, n}`. Every `k`-term progression in a set `S ⊆ {1, …, n}` is a translate of one of them,
-by an integer `t` with `-M ≤ t < n`. If `S` contains many progressions, then by the pigeonhole
-principle some translate of `Y` meets `S` in a set with many common differences.
+Let `Y ⊆ {1, …, M}` contain a `k`-term arithmetic progression `P_d` with every common difference
+`d ∈ {1, …, n}`. Every `k`-term progression in `{1, …, n}` with common difference `d` is
+`{t} + P_d` for an integer `t` with `-M ≤ t < n`. If a set `S` contains many progressions, then
+by the pigeonhole principle many of them share the same `t`, and `({t} + Y) ∩ S` has many
+common differences.
 
 ## Main statements
 
-* `RandomDifferences.exists_translate_subset_le_ncard`: the pigeonhole argument.
+* `RandomDifferences.exists_le_ncard_commonDiffs_singleton_add_inter`: the pigeonhole argument.
 -/
 
 public section
 
 namespace RandomDifferences
 
-open Combinatorics Combinatorics.ArithmeticProgression Finset
+open Combinatorics.ArithmeticProgression Finset Pointwise
 
-/-- The natural numbers of the form `y + t` with `y ∈ Y`, for an integer `t`. -/
-noncomputable def translate (t : ℤ) (Y : Finset ℕ) : Finset ℕ :=
-  (Y.image fun y : ℕ ↦ (y : ℤ) + t).preimage Nat.cast Nat.cast_injective.injOn
-
-lemma mem_translate {t : ℤ} {x : ℕ} {Y : Finset ℕ} :
-    x ∈ translate t Y ↔ ∃ y ∈ Y, (y : ℤ) + t = x := by
-  simp [translate]
-
-/-- The pairs in `containedProgressions k (n + 1) S` are progressions in `S ⊆ {1, …, n}` with
-common difference in `{1, …, n}`. -/
-lemma of_mem_containedProgressions {k n : ℕ} (hk : k ≠ 0) {S : Finset ℕ} (hS : S ⊆ Icc 1 n)
-    {a d : ℕ} (h : (a, d) ∈ containedProgressions k (n + 1) S) :
-    a ∈ Icc 1 n ∧ d ∈ Icc 1 n ∧ ∀ i < k, a + i * d ∈ S := by
-  simp only [containedProgressions, mem_filter, mem_product, mem_range] at h
-  obtain ⟨⟨-, hd⟩, hd0, hS'⟩ := h
-  have h₀ := hS' ⟨0, Nat.pos_of_ne_zero hk⟩
-  rw [Fin.val_mk, zero_mul, add_zero] at h₀
-  refine ⟨hS h₀, by grind, ?_⟩
+/-- If `Y` contains the progression `y + i * d` and `S` contains the progression `a + i * d`
+for `i < k`, then `d` is a common difference of `({a - y} + Y) ∩ S`. -/
+lemma mem_commonDiffs_singleton_add_inter {k : ℕ} {Y S : Finset ℤ} {y a d : ℤ} (hd : d ≠ 0)
+    (hy : ∀ i < k, y + i * d ∈ Y) (ha : ∀ i < k, a + i * d ∈ S) :
+    d ∈ commonDiffs k (({a - y} + Y) ∩ S) := by
+  refine mem_commonDiffs.2 ⟨hd, a, ?_⟩
   intro i hi
-  exact hS' ⟨i, hi⟩
+  exact mem_inter.2 ⟨mem_add.2 ⟨a - y, mem_singleton_self _, _, hy i hi, by ring⟩, ha i hi⟩
 
-/-- If `Y ⊆ {1, …, M}` contains a `k`-term progression with every common difference in
-`{1, …, n}` and `S ⊆ {1, …, n}` contains at least `(M + n) * b` progressions, then some
-translate of a subset of `Y` is contained in `S` and has at least `b` common differences. -/
-lemma exists_translate_subset_le_ncard {k n M : ℕ} (hk : k ≠ 0) (hn : n ≠ 0) {Y S : Finset ℕ}
-    (hYM : Y ⊆ Icc 1 M) (hY : ∀ d ∈ Icc 1 n, d ∈ commonDiffs k Y) (hS : S ⊆ Icc 1 n)
-    {b : ℝ} (hb : (M + n) • b ≤ #(containedProgressions k (n + 1) S)) :
-    ∃ t ∈ Ico (-(M : ℤ)) n, ∃ Y' ⊆ Y, translate t Y' ⊆ S ∧
-      b ≤ (commonDiffs k (translate t Y') ∩ Set.Icc 1 n).ncard := by
-  have hY' : ∀ d ∈ Icc 1 n, ∃ a, ∀ i < k, a + i * d ∈ Y := by
-    intro d hd
-    obtain ⟨-, h⟩ := mem_commonDiffs_nat.1 (hY d hd)
-    exact h
-  choose! y hy using hY'
-  have hyM : ∀ d ∈ Icc 1 n, y d ∈ Icc 1 M := by
-    intro d hd
-    grind [hYM (hy d hd 0 (Nat.pos_of_ne_zero hk))]
-  have hmaps : ∀ p ∈ containedProgressions k (n + 1) S,
-      (fun (a, d) ↦ (a : ℤ) - y d) p ∈ Ico (-(M : ℤ)) n := by
+/-- Let `Y ⊆ {1, …, M}` contain a `k`-term progression with every common difference in
+`{1, …, n}`, and let `S` contain at least `(M + n) * b` progressions with first term and common
+difference in `{1, …, n}`. Then for some `t` with `-M ≤ t < n`, the set `({t} + Y) ∩ S` has at
+least `b` common differences in `{1, …, n}`. -/
+lemma exists_le_ncard_commonDiffs_singleton_add_inter {k n M : ℕ} (hk : k ≠ 0) (hn : n ≠ 0)
+    {Y S : Finset ℤ} (hYM : Y ⊆ Icc 1 (M : ℤ)) (hY : ∀ d ∈ Icc 1 (n : ℤ), d ∈ commonDiffs k Y)
+    {b : ℝ} (hb : (M + n) • b ≤ #(progressions k n S)) :
+    ∃ t ∈ Ico (-(M : ℤ)) n, b ≤ (commonDiffs k (({t} + Y) ∩ S) ∩ Set.Icc 1 (n : ℤ)).ncard := by
+  choose! y hy using fun d hd ↦ (mem_commonDiffs.1 (hY d hd)).2
+  have hmaps : ∀ p ∈ progressions k n S, (fun (a, d) ↦ a - y d) p ∈ Ico (-(M : ℤ)) n := by
     rintro ⟨a, d⟩ hp
-    grind [of_mem_containedProgressions hk hS hp]
-  have hI : #(Ico (-(M : ℤ)) n) = M + n := (Int.card_Ico _ _).trans (by grind)
-  rw [← hI] at hb
+    obtain ⟨ha, hd, -⟩ := mem_progressions.1 hp
+    grind [hYM (hy d hd 0 (Nat.pos_of_ne_zero hk))]
+  rw [← (Int.card_Ico _ _).trans (by grind : (n - -(M : ℤ)).toNat = M + n)] at hb
   obtain ⟨t, ht, hcard⟩ :=
     exists_le_card_fiber_of_nsmul_le_card_of_maps_to hmaps (nonempty_Ico.2 (by grind)) hb
-  refine ⟨t, ht, {z ∈ Y | ∃ x ∈ S, (z : ℤ) + t = x}, filter_subset _ _, ?_, ?_⟩
-  · intro x hx
-    grind [mem_translate]
-  · apply hcard.trans
-    rw [← card_image_of_injOn (f := Prod.snd), ← Set.ncard_coe_finset, Nat.cast_le]
-    · apply Set.ncard_le_ncard _ ((Set.finite_Icc 1 n).inter_of_right _)
-      intro d' hd'
-      obtain ⟨⟨a, d⟩, hp, rfl⟩ := mem_image.1 hd'
-      obtain ⟨hp, hat⟩ := mem_filter.1 hp
-      obtain ⟨ha, hd, haS⟩ := of_mem_containedProgressions hk hS hp
-      refine ⟨mem_commonDiffs_nat.2 ⟨by grind, a, ?_⟩, by grind⟩
-      intro i hi
-      rw [mem_translate]
-      refine ⟨y d + i * d, mem_filter.2 ⟨hy d hd i hi, a + i * d, haS i hi, ?_⟩, ?_⟩ <;> grind
-    · rintro ⟨a, d⟩ hp ⟨a', d'⟩ hq hdd
-      simp only [coe_filter, Set.mem_ofPred_eq] at hp hq
-      grind
+  refine ⟨t, ht, hcard.trans ?_⟩
+  rw [← Set.ncard_coe_finset, Nat.cast_le]
+  apply Set.ncard_le_ncard_of_injOn Prod.snd _ _ ((Set.finite_Icc _ _).inter_of_right _)
+  · rintro ⟨a, d⟩ hp
+    obtain ⟨hp', rfl⟩ := mem_filter.1 hp
+    obtain ⟨-, hd, haS⟩ := mem_progressions.1 hp'
+    exact ⟨mem_commonDiffs_singleton_add_inter (by grind) (hy d hd) haS, by simpa using hd⟩
+  · rintro ⟨a, d⟩ hp ⟨a', d'⟩ hq hdd
+    grind [mem_filter.1 hp, mem_filter.1 hq]
 
 end RandomDifferences

@@ -41,7 +41,9 @@ common difference in $\lbrace 1, \dots, n \rbrace$. The constants are explicit:
 | Files in `SzemerediWithRandomDifferences/` | Contents |
 | --- | --- |
 | `CommonDiffs.lean` | Common differences of the progressions in a set |
-| `Translate.lean` | The pigeonhole argument over translates |
+| `Progressions.lean` | The pairs $(a, d)$ in $\lbrace 1, \dots, n \rbrace^2$ with $a + id \in S$ for $i < k$ |
+| `Varnavides.lean` | Varnavides' theorem for subsets of $\lbrace 1, \dots, n \rbrace$ in $\mathbb{Z}$ |
+| `Translate.lean` | The pigeonhole argument over translates $\lbrace t \rbrace + Y$ |
 | `Cover.lean` | The covering lemma: a small cover of the dense sets |
 | `SetBernoulli.lean` | The probability that a random set avoids a finite set |
 | `Ackermann.lean` | The bounds $3 (kQ + 1) A(4k + 1, s) \le A(4k + 2, s)$ and $n_0 \le A(4k + 2, s)$ |

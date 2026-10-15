@@ -4,15 +4,16 @@ version: "v0.4"
 project:
   name: "Szemerédi's theorem with random differences"
   description: >-
+
     Lean 4 formalization of the main result of the preprint "Szemerédi's theorem with random
     differences and arithmetic Kakeya" by Gabriel Dahia (arXiv:2610.18859), a threshold for
-    Szemerédi's theorem with random differences. For c = 1/100, k ≥ 3, δ > 0 and p ≥ C n^(-c / log log k), where C is a value of the
-    Ackermann function depending on k and δ, a p-random set D of differences in {1, …, n}
-    has the following property with probability at least 1 - exp(-n^(1 - c / log log k)):
-    every subset of {1, …, n} with at least δn elements contains a k-term arithmetic
-    progression with common difference in D. The proof uses the Green–Ruzsa construction of
-    small sets containing a progression with every common difference, which is also
-    formalized.
+    Szemerédi's theorem with random differences. For c = 1/100, k ≥ 3, δ > 0 and
+    p ≥ C n^(-c / log log k), where C is a value of the Ackermann function depending on k and
+    δ, a p-random set D of differences in {1, …, n} has the following property with probability
+    at least 1 - exp(-n^(1 - c / log log k)): every subset of {1, …, n} with at least δn
+    elements contains a k-term arithmetic progression with common difference in D. The proof
+    uses the Green–Ruzsa construction of small sets containing a progression with every common
+    difference, which is also formalized.
   authors:
     - name: "Gabriel Dahia"
       github: "gdahia"
@@ -85,7 +86,8 @@ automation:
         Set up the repository, read the preprint and the arXiv source of Green and Ruzsa,
         wrote the statements and the proofs, and checked them with the Lean compiler. Gabriel
         Dahia fixed the form of the Green–Ruzsa statement, the definitions, the names, the
-        module structure and the proof style.
+        module structure and the proof style, and reviewed and edited every statement and
+        proof with its assistance.
       cost:
         wall_time: "one session over two days"
         spend_usd: "not tracked"
@@ -98,9 +100,10 @@ automation:
         preprint, with Varnavides' theorem imported from DensityHalesJewett.
   spend_usd: "not tracked"
   notes: >-
-    Claude Code wrote the Lean code and this file under the direction of Gabriel Dahia. The
-    library and Solution.lean build without sorry. The solution theorem uses propext,
-    Classical.choice and Quot.sound only.
+    Claude Code wrote the Lean code and this file under the direction of Gabriel Dahia, who
+    then reviewed and edited every statement and proof with Claude Opus 5.5. The library and
+    Solution.lean build without sorry. The solution theorem uses propext, Classical.choice
+    and Quot.sound only.
 
 fidelity:
   divergences: >-
@@ -120,12 +123,12 @@ fidelity:
     {1, …, kQn}.
 
 review:
-  status: "partially reviewed"
+  status: "self-assessed"
   reviewers:
     - "Gabriel Dahia"
   notes: >-
-    Reviewed the statements of the Green–Ruzsa part and, in part, the style of its proofs.
-    The statements and proofs on random differences have not been reviewed yet.
+    Gabriel Dahia reviewed and edited every statement and proof, with assistance from Claude
+    Opus 5.5. There has been no independent review.
 
 alignment:
   namespace: "RandomDifferences"

@@ -42,31 +42,35 @@ open ArithmeticKakeya Combinatorics.ArithmeticProgression Finset MeasureTheory P
 
 /-- Some subset of `{1, …, n}` with at least `δ * n` elements contains no `k`-term arithmetic
 progression with common difference in `D`. -/
-def IsAvoidable (k : ℕ) (δ : ℝ) (n : ℕ) (D : Set ℕ) : Prop :=
-  ∃ S : Finset ℕ, S ⊆ Icc 1 n ∧ δ * n ≤ #S ∧ Disjoint (commonDiffs k S) D
+def IsAvoidable (k : ℕ) (δ : ℝ) (n : ℕ) (D : Set ℤ) : Prop :=
+  ∃ S : Finset ℤ, S ⊆ Icc 1 (n : ℤ) ∧ δ * n ≤ #S ∧ Disjoint (commonDiffs k S) D
 
-lemma isAvoidable_iff {k n : ℕ} {δ : ℝ} {D : Set ℕ} :
-    IsAvoidable k δ n D ↔ ∃ S : Finset ℕ, S ⊆ Icc 1 n ∧ δ * n ≤ #S ∧
+lemma isAvoidable_iff {k n : ℕ} {δ : ℝ} {D : Set ℤ} :
+    IsAvoidable k δ n D ↔ ∃ S : Finset ℤ, S ⊆ Icc 1 (n : ℤ) ∧ δ * n ≤ #S ∧
       ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S := by
-  simp [IsAvoidable, disjoint_commonDiffs_nat]
+  simp [IsAvoidable, disjoint_commonDiffs]
+
+/-- If `D` is avoidable, then `D` misses the common differences of some member of a cover. -/
+lemma setOf_isAvoidable_subset_biUnion {k n : ℕ} {δ : ℝ} {𝓕 : Finset (Finset ℤ)}
+    (h𝓕 : IsCover 𝓕 {S | S ⊆ Icc 1 (n : ℤ) ∧ δ * n ≤ #S}) :
+    {D | IsAvoidable k δ n D} ⊆ ⋃ F ∈ 𝓕, {D | Disjoint (commonDiffs k F) D} := by
+  rintro D ⟨S, hS, hSδ, hD⟩
+  obtain ⟨F, hF, hFS⟩ := h𝓕.exists_subset ⟨hS, hSδ⟩
+  rw [Set.mem_iUnion₂]
+  exact ⟨F, hF, Set.disjoint_of_subset_left (commonDiffs_mono k fun _ hx ↦ hFS hx) hD⟩
 
 /-- The union bound over a cover. -/
-lemma setBernoulli_isAvoidable_le {k n : ℕ} {δ b : ℝ} (p : I) {𝓕 : Finset (Finset ℕ)}
-    (h𝓕 : IsCover 𝓕 {S | S ⊆ Icc 1 n ∧ δ * n ≤ #S})
-    (hb : ∀ F ∈ 𝓕, b ≤ (commonDiffs k F ∩ Set.Icc 1 n).ncard) :
-    setBer(Set.Icc 1 n, p) {D | IsAvoidable k δ n D} ≤
+lemma setBernoulli_isAvoidable_le {k n : ℕ} {δ b : ℝ} (p : I) {𝓕 : Finset (Finset ℤ)}
+    (h𝓕 : IsCover 𝓕 {S | S ⊆ Icc 1 (n : ℤ) ∧ δ * n ≤ #S})
+    (hb : ∀ F ∈ 𝓕, b ≤ (commonDiffs k F ∩ Set.Icc 1 (n : ℤ)).ncard) :
+    setBer(Set.Icc 1 (n : ℤ), p) {D | IsAvoidable k δ n D} ≤
       ENNReal.ofReal (#𝓕 * Real.exp (-(p * b))) := by
-  have hmono : {D | IsAvoidable k δ n D} ⊆ ⋃ F ∈ 𝓕, {D | Disjoint (commonDiffs k F) D} := by
-    rintro D ⟨S, hS, hSδ, hD⟩
-    obtain ⟨F, hF, hFS⟩ := h𝓕.exists_subset ⟨hS, hSδ⟩
-    rw [Set.mem_iUnion₂]
-    exact ⟨F, hF, Set.disjoint_of_subset_left (commonDiffs_mono k fun _ hx ↦ hFS hx) hD⟩
-  apply (measure_mono hmono).trans
+  apply (measure_mono (setOf_isAvoidable_subset_biUnion h𝓕)).trans
   apply (measure_biUnion_finset_le _ _).trans
   rw [ENNReal.ofReal_mul (Nat.cast_nonneg _), ENNReal.ofReal_natCast, ← nsmul_eq_mul, ← sum_const]
   apply sum_le_sum
   intro F hF
-  have hfin := (Set.finite_Icc 1 n).inter_of_right (commonDiffs k F)
+  have hfin := (Set.finite_Icc 1 (n : ℤ)).inter_of_right (commonDiffs k F)
   apply setBernoulli_disjoint_le p hfin.coe_toFinset.subset
   rw [← Set.ncard_eq_toFinset_card _ hfin]
   exact hb F hF
@@ -74,7 +78,7 @@ lemma setBernoulli_isAvoidable_le {k n : ℕ} {δ b : ℝ} (p : I) {𝓕 : Finse
 lemma setBernoulli_isAvoidable_le_of_coverBound_le {k : ℕ} (hk : 3 ≤ k) {δ : ℝ} (hδ : 0 < δ)
     {n : ℕ} (hn : coverBound k δ ≤ n) {p : I}
     (hp : 3 / coverDensity k δ * n ^ (-(c / Real.log (Real.log k))) ≤ p) :
-    setBer(Set.Icc 1 n, p) {D | IsAvoidable k δ n D} ≤
+    setBer(Set.Icc 1 (n : ℤ), p) {D | IsAvoidable k δ n D} ≤
       ENNReal.ofReal ((k * modulus k + 1) *
         (n * Real.exp (-(2 * n ^ (1 - c / Real.log (Real.log k)))))) := by
   obtain ⟨𝓕, h𝓕, hcard, hb⟩ := exists_isCover_card_le hk hδ hn
@@ -93,24 +97,32 @@ lemma setBernoulli_isAvoidable_le_of_coverBound_le {k : ℕ} (hk : 3 ≤ k) {δ 
 private lemma two_mul_log_le_rpow {x θ : ℝ} (hx : 0 < x) (hθ : 22 / 25 ≤ θ) :
     2 * Real.log x ≤ x ^ θ := by
   have hy := Real.rpow_pos_of_pos hx θ
-  have h := Real.log_le_sub_one_of_pos (div_pos hy (Real.exp_pos 1))
-  rw [Real.log_div hy.ne' (Real.exp_pos 1).ne', Real.log_exp, Real.log_rpow hx,
-    sub_le_sub_iff_right, le_div_iff₀ (Real.exp_pos 1)] at h
   rcases le_or_gt (Real.log x) 0 with hl | hl
   · linarith
-  · linarith [mul_nonneg (sub_nonneg.2 hθ) hl.le, mul_nonneg (mul_nonneg (by linarith : 0 ≤ θ)
-      hl.le) (by linarith [Real.exp_one_gt_d9] : 0 ≤ Real.exp 1 - 5 / 2)]
+  calc 2 * Real.log x
+    _ ≤ Real.exp 1 * (θ * Real.log x) := by
+      nlinarith [mul_nonneg (mul_nonneg (by linarith : 0 ≤ θ) hl.le)
+        (by linarith [Real.exp_one_gt_d9] : 0 ≤ Real.exp 1 - 5 / 2)]
+    _ = Real.exp 1 * (Real.log (x ^ θ / Real.exp 1) + 1) := by
+      rw [Real.log_div hy.ne' (Real.exp_pos 1).ne', Real.log_exp, Real.log_rpow hx]
+      ring
+    _ ≤ Real.exp 1 * (x ^ θ / Real.exp 1) := by
+      grw [Real.log_le_sub_one_of_pos (div_pos hy (Real.exp_pos 1)), sub_add_cancel]
+    _ = x ^ θ := mul_div_cancel₀ _ (Real.exp_pos 1).ne'
 
 private lemma mul_mul_exp_neg_le {a θ : ℝ} {n : ℕ} (han : a ≤ n) (hn : 0 < n)
     (hθ : 22 / 25 ≤ θ) : a * (n * Real.exp (-(2 * n ^ θ))) ≤ Real.exp (-n ^ θ) := by
   have hn' : (0 : ℝ) < n := mod_cast hn
-  have h := Real.exp_le_exp.2 (two_mul_log_le_rpow hn' hθ)
-  rw [two_mul, Real.exp_add, Real.exp_log hn'] at h
-  rw [← mul_assoc]
-  refine (mul_le_mul_of_nonneg_right ((mul_le_mul_of_nonneg_right han hn'.le).trans h)
-    (Real.exp_nonneg _)).trans_eq ?_
-  rw [← Real.exp_add]
-  ring_nf
+  calc a * (n * Real.exp (-(2 * n ^ θ)))
+    _ ≤ n * (n * Real.exp (-(2 * n ^ θ))) := by gcongr
+    _ = Real.exp (2 * Real.log n) * Real.exp (-(2 * n ^ θ)) := by
+      rw [two_mul (Real.log _), Real.exp_add, Real.exp_log hn']
+      ring
+    _ ≤ Real.exp (n ^ θ) * Real.exp (-(2 * n ^ θ)) := by
+      grw [two_mul_log_le_rpow hn' hθ]
+    _ = Real.exp (-n ^ θ) := by
+      rw [← Real.exp_add]
+      ring_nf
 
 /-- A probability `p` with `C * n ^ (-γ) ≤ p` exists only if `C ≤ n`. -/
 private lemma le_of_mul_rpow_neg_le {C n : ℕ} {γ : ℝ} {p : I} (hn : 0 < n) (hγ : γ ≤ 1)
@@ -130,11 +142,12 @@ private lemma le_of_mul_rpow_neg_le {C n : ℕ} {γ : ℝ} {p : I} (hn : 0 < n) 
 most `exp (-n ^ (1 - c / log (log k)))`. -/
 theorem setBernoulli_isAvoidable_le_exp {k : ℕ} (hk : 3 ≤ k) {δ : ℝ} (hδ : 0 < δ) {n : ℕ}
     {p : I} (hp : ack (4 * k + 2) (k + ⌈2 / δ⌉₊) * (n : ℝ) ^ (-c / Real.log (Real.log k)) ≤ p) :
-    setBer(Set.Icc 1 n, p) {D | IsAvoidable k δ n D} ≤
+    setBer(Set.Icc 1 (n : ℤ), p) {D | IsAvoidable k δ n D} ≤
       ENNReal.ofReal (Real.exp (-n ^ (1 - c / Real.log (Real.log k)))) := by
   have hc := c_div_log_log_le hk
   rcases Nat.eq_zero_or_pos n with rfl | hn
-  · rw [Nat.cast_zero, Real.zero_rpow (by linarith), neg_zero, Real.exp_zero, ENNReal.ofReal_one]
+  · rw [Nat.cast_zero (R := ℝ), Real.zero_rpow (by linarith), neg_zero, Real.exp_zero,
+      ENNReal.ofReal_one]
     exact prob_le_one
   rw [neg_div] at hp
   have hCn := le_of_mul_rpow_neg_le hn (by linarith) hp

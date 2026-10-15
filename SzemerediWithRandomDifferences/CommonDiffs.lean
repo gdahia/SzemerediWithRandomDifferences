@@ -6,6 +6,7 @@ Authors: Gabriel Dahia
 module
 
 public import DensityHalesJewett.Szemeredi
+public import Mathlib.Algebra.Ring.CharZero
 
 /-!
 # Common differences of the arithmetic progressions in a set
@@ -33,7 +34,7 @@ lemma commonDiffs_mono (k : ℕ) {S : β} {T : γ} (h : ∀ x ∈ S, x ∈ T) :
   intro i
   exact h _ (hP i)
 
-lemma mem_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {d : ℕ} :
+lemma mem_commonDiffs {α β : Type*} [Semiring α] [Membership α β] {k : ℕ} {S : β} {d : α} :
     d ∈ commonDiffs k S ↔ d ≠ 0 ∧ ∃ a, ∀ i < k, a + i * d ∈ S := by
   constructor
   · rintro ⟨P, rfl, hP⟩
@@ -45,8 +46,19 @@ lemma mem_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {d
     intro i
     simpa [term] using ha i i.isLt
 
-lemma disjoint_commonDiffs_nat {β : Type*} [Membership ℕ β] {k : ℕ} {S : β} {D : Set ℕ} :
+lemma disjoint_commonDiffs {α β : Type*} [Semiring α] [Membership α β] {k : ℕ} {S : β}
+    {D : Set α} :
     Disjoint (commonDiffs k S) D ↔ ∀ d ∈ D, d ≠ 0 → ∀ a, ∃ i < k, a + i * d ∉ S := by
-  simp [Set.disjoint_right, mem_commonDiffs_nat]
+  simp [Set.disjoint_right, mem_commonDiffs]
+
+/-- A common difference of a set of natural numbers is a common difference of its image in a
+semiring of characteristic zero, such as `ℤ`. -/
+lemma natCast_mem_commonDiffs_map {α : Type*} [Semiring α] [CharZero α] {k : ℕ}
+    {S : Finset ℕ} {d : ℕ} (h : d ∈ commonDiffs k S) :
+    (d : α) ∈ commonDiffs k (S.map Nat.castEmbedding) := by
+  obtain ⟨hd, a, ha⟩ := mem_commonDiffs.1 h
+  refine mem_commonDiffs.2 ⟨by simpa, a, ?_⟩
+  intro i hi
+  exact Finset.mem_map.2 ⟨a + i * d, ha i hi, by simp⟩
 
 end Combinatorics.ArithmeticProgression
