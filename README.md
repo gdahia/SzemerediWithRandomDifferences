@@ -16,8 +16,7 @@ $C = A(4k + 2, k + \lceil 2/\delta \rceil)$, where $A$ is the Ackermann function
 $p$-random subset of $\lbrace 1, \dots, n \rbrace$ with $p \ge C n^{-c / \log \log k}$. With
 probability at least $1 - \exp(-n^{1 - c / \log \log k})$, every subset of
 $\lbrace 1, \dots, n \rbrace$ with at least $\delta n$ elements contains a $k$-term arithmetic
-progression with common difference in $D$. No lower bound on $n$ is needed, since $p \le 1$
-forces $n \ge C$.
+progression with common difference in $D$.
 
 [Solution.lean](Solution.lean) proves this as
 `RandomDifferences.szemeredi_setBernoulli_exists_avoiding_le_exp`.
@@ -50,7 +49,7 @@ common difference in $\lbrace 1, \dots, n \rbrace$. The constants are explicit:
 | `ArithmeticKakeya/Parameters.lean` | The parameters `modulus`, `sizeBound`, `c` and `n₀` |
 | `ArithmeticKakeya/Residues.lean` | Residues of $d^2 + jd$ modulo primes and products |
 | `ArithmeticKakeya/BaseSet.lean` | The set $S$ |
-| `ArithmeticKakeya/DigitSet.lean` | Numbers whose base-$Q$ digits lie in a given set |
+| `ArithmeticKakeya/DigitSet.lean` | Numbers whose digits in base $Q$ lie in a given set |
 | `ArithmeticKakeya/Construction.lean` | The construction for a general modulus |
 | `ArithmeticKakeya/Modulus.lean` | Estimates for $Q$ and $B$ |
 | `ArithmeticKakeya/Threshold.lean` | The bound $n^{1 - c / \log \log k}$ for $n \ge n_0$ |
