@@ -1,6 +1,6 @@
 {
-  "challenge_module": "Challenge",
-  "solution_module": "Solution",
+  "challenge_module": "SzemerediWithRandomDifferencesPalomar.Challenge",
+  "solution_module": "SzemerediWithRandomDifferencesPalomar.Solution",
   "theorem_names": [
     "RandomDifferences.szemeredi_setBernoulli_exists_avoiding_le_exp"
   ],

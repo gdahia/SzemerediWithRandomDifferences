@@ -18,10 +18,11 @@ probability at least $1 - \exp(-n^{1 - c / \log \log k})$, every subset of
 $\lbrace 1, \dots, n \rbrace$ with at least $\delta n$ elements contains a $k$-term arithmetic
 progression with common difference in $D$.
 
-[Solution.lean](Solution.lean) proves this as
+[Solution.lean](SzemerediWithRandomDifferencesPalomar/Solution.lean) proves this as
 `RandomDifferences.szemeredi_setBernoulli_exists_avoiding_le_exp`.
-[Challenge.lean](Challenge.lean) contains the same statement with a `sorry` placeholder. The
-constants are `RandomDifferences.c` and `RandomDifferences.C`, and $A$ is Mathlib's `ack`.
+[Challenge.lean](SzemerediWithRandomDifferencesPalomar/Challenge.lean) contains the same statement
+with a `sorry` placeholder. The constants are `RandomDifferences.c` and `RandomDifferences.C`, and
+$A$ is Mathlib's `ack`.
 
 The Green–Ruzsa theorem, Theorem 1.2 of the arXiv version and Theorem 1.7 of the
 [published version](https://doi.org/10.1007/s10998-018-0270-z), is

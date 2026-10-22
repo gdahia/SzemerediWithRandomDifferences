@@ -27,9 +27,9 @@ name = "SzemerediWithRandomDifferences"
 # The small statement-only surface a reader audits.
 [[lean_lib]]
 name = "Challenge"
-roots = ["Challenge"]
+roots = ["SzemerediWithRandomDifferencesPalomar.Challenge"]
 
 # Proves the declarations stated in `Challenge.lean`; Comparator checks the two agree.
 [[lean_lib]]
 name = "Solution"
-roots = ["Solution"]
+roots = ["SzemerediWithRandomDifferencesPalomar.Solution"]
