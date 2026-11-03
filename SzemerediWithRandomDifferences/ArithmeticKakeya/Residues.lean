@@ -130,8 +130,7 @@ lemma card_residues_prod_le {ι : Type*} {s : Finset ι} {q : ι → ℕ}
   | empty => simp [residues]
   | insert a s ha ih =>
     rw [prod_insert ha, prod_insert ha]
-    refine (card_residues_mul_le (Nat.coprime_prod_right_iff.2 ?_) j).trans
-      (Nat.mul_le_mul_left _ (ih (hq.mono (by simp))))
+    grw [card_residues_mul_le (Nat.coprime_prod_right_iff.2 ?_) j, ih (hq.mono (by simp))]
     intro i hi
     exact hq (mem_insert_self a s) (mem_insert_of_mem hi) (by grind)
 

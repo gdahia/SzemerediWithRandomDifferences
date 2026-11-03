@@ -58,11 +58,10 @@ lemma mul_rpow_le_rpow_of_pow_le {B Q E n : ℕ} {γ : ℝ} (hBQ : B ≤ Q) (hQ 
     linarith [mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg (α := ℝ) E) h.le]
   rw [← sub_add_cancel (1 - γ) β, Real.rpow_add hn', sub_right_comm]
   refine mul_le_mul_of_nonneg_right ?_ (by positivity)
-  refine le_trans ?_ (Real.rpow_le_rpow (by positivity) (Nat.cast_le (α := ℝ).2 hn) hδ)
+  grw [← hn]
   rw [Nat.cast_pow, ← Real.rpow_natCast, ← Real.rpow_mul (Nat.cast_nonneg Q)]
-  refine le_trans ?_ (Real.rpow_le_rpow_of_exponent_le (mod_cast hQ.le) hE)
-  rw [Real.rpow_one]
-  exact_mod_cast hBQ
+  grw [← hE, Real.rpow_one, hBQ]
+  exact_mod_cast hQ.le
 
 /-! ### The saving for the parameters of the construction -/
 

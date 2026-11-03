@@ -44,9 +44,7 @@ lemma exists_card_le_pow_forall_exists_arithmeticProgression {Q k r : ℕ} (hk :
     obtain ⟨a, ha, rfl⟩ := mem_image.1 hy
     rw [mem_Icc]
     grind [add_le_of_mem_digitSet (fun s ↦ add_le_of_mem_baseSet) ha]
-  · apply card_image_le.trans
-    apply (card_digitSet_le Q _ t).trans
-    exact Nat.pow_le_pow_left (card_baseSet_le hr) t
+  · grw [card_image_le, card_digitSet_le, card_baseSet_le hr]
   · intro d hd
     obtain ⟨hd0, hd⟩ := mem_Ioo.1 hd
     obtain ⟨a, ha⟩ :=
@@ -66,7 +64,7 @@ lemma exists_card_le_pow_log_forall_exists_arithmeticProgression {Q k r n : ℕ}
     exists_card_le_pow_forall_exists_arithmeticProgression hk hr (Nat.log Q n + 1)
   refine ⟨Y, hY.trans (Icc_subset_Icc_right ?_), hcard, ?_⟩
   · rw [pow_succ, mul_assoc, mul_comm Q n]
-    exact Nat.mul_le_mul_left _ (Nat.mul_le_mul_right _ (Nat.pow_log_le_self Q hn))
+    grw [Nat.pow_log_le_self Q hn]
   · intro d hd
     obtain ⟨hd1, hdn⟩ := mem_Icc.1 hd
     exact hAP d (mem_Ioo.2 ⟨hd1, hdn.trans_lt (Nat.lt_pow_succ_log_self hQ n)⟩)

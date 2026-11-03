@@ -61,15 +61,14 @@ lemma three_mul_modulus_mul_ack_le_ack {k s : ℕ} (hk : 2 ≤ k) (hs : k ≤ s)
 
 private lemma ceil_ten_mul_log_log_le (k : ℕ) : ⌈10 * Real.log (Real.log k)⌉₊ ≤ 10 * k := by
   rw [Nat.ceil_le, Nat.cast_mul, Nat.cast_ofNat]
-  exact mul_le_mul_of_nonneg_left ((Real.log_le_self (Real.log_natCast_nonneg k)).trans
-    (Real.log_le_self (Nat.cast_nonneg k))) (by norm_num)
+  grw [Real.log_le_self (Real.log_natCast_nonneg k), Real.log_le_self (Nat.cast_nonneg k)]
 
 lemma n₀_le_ack {k s : ℕ} (hk : 2 ≤ k) (hs : k ≤ s) : n₀ k ≤ ack (4 * k + 2) s := by
   rw [n₀]
-  apply (Nat.pow_le_pow_right (modulus_pos k)
-    (Nat.add_le_add_right (ceil_ten_mul_log_log_le k) 100)).trans
-  exact (((ackBounded_modulus k).pow le_rfl
-    ((ackBounded_ten_mul k).add le_rfl (num le_rfl 100))).le_ack (by norm_num) (by grind)
-      (by grind)).trans (ack_le_ack (by grind) hs)
+  grw [ceil_ten_mul_log_log_le k]
+  · exact (((ackBounded_modulus k).pow le_rfl
+      ((ackBounded_ten_mul k).add le_rfl (num le_rfl 100))).le_ack (by norm_num) (by grind)
+        (by grind)).trans (ack_le_ack (by grind) hs)
+  · exact modulus_pos k
 
 end RandomDifferences

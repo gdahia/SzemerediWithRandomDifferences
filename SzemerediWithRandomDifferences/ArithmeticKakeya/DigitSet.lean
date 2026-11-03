@@ -49,7 +49,7 @@ lemma card_digitSet_le (Q : ℕ) (S : Finset ℕ) (t : ℕ) : #(digitSet Q S t) 
   | zero => simp
   | succ t ih =>
     rw [digitSet_succ, pow_succ']
-    exact (card_image₂_le _ _ _).trans (Nat.mul_le_mul_left _ ih)
+    grw [card_image₂_le, ih]
 
 lemma add_le_of_mem_digitSet {Q k : ℕ} {S : Finset ℕ} (hS : ∀ s ∈ S, s + k ≤ k * Q) {t a : ℕ}
     (ha : a ∈ digitSet Q S t) : a + k ≤ k * Q ^ t := by

@@ -89,8 +89,8 @@ lemma setBernoulli_isAvoidable_le_of_coverBound_le {k : ℕ} (hk : 3 ≤ k) {δ 
   rw [mul_assoc, ← Real.rpow_add_one hn0.ne', neg_add_eq_sub, mul_assoc] at hpn
   apply (setBernoulli_isAvoidable_le p h𝓕 hb).trans
   apply ENNReal.ofReal_le_ofReal
-  apply (mul_le_mul hcard (Real.exp_le_exp.2 (neg_le_neg hpn)) (Real.exp_nonneg _)
-    (by positivity)).trans_eq
+  grw [hcard, ← hpn]
+  apply le_of_eq
   rw [mul_assoc, mul_assoc, ← Real.exp_add]
   ring_nf
 
@@ -131,9 +131,7 @@ private lemma le_of_mul_rpow_neg_le {C n : ℕ} {γ : ℝ} {p : I} (hn : 0 < n) 
   have hpos := Real.rpow_pos_of_pos (zero_lt_one.trans_le hn1) γ
   rw [Real.rpow_neg (Nat.cast_nonneg n), mul_inv_le_iff₀ hpos] at hp
   rw [← Nat.cast_le (α := ℝ)]
-  apply hp.trans
-  apply (mul_le_of_le_one_left hpos.le (le_one p)).trans
-  exact (Real.rpow_le_rpow_of_exponent_le hn1 hγ).trans_eq (Real.rpow_one _)
+  grw [hp, le_one p, one_mul, Real.rpow_le_rpow_of_exponent_le hn1 hγ, Real.rpow_one]
 
 /-- **Szemerédi's theorem with random differences.** Let `k ≥ 3`, `δ > 0` and
 `C = ack (4 * k + 2) (k + ⌈2 / δ⌉₊)`. Let `D` be a `p`-random subset of `{1, …, n}`, where
@@ -152,8 +150,7 @@ theorem setBernoulli_isAvoidable_le_exp {k : ℕ} (hk : 3 ≤ k) {δ : ℝ} (hδ
   rw [neg_div] at hp
   have hCn := le_of_mul_rpow_neg_le hn (by linarith) hp
   apply (setBernoulli_isAvoidable_le_of_coverBound_le hk hδ ((coverBound_le_ack hk δ).trans hCn)
-    ((mul_le_mul_of_nonneg_right (three_div_coverDensity_le hk δ)
-      (Real.rpow_nonneg (Nat.cast_nonneg n) _)).trans hp)).trans
+    (hp.trans' (by grw [three_div_coverDensity_le hk δ]))).trans
   apply ENNReal.ofReal_le_ofReal
   exact mul_mul_exp_neg_le (mod_cast (mul_modulus_add_one_le_ack (by grind)
     (Nat.le_add_right _ _)).trans hCn) hn (by linarith)

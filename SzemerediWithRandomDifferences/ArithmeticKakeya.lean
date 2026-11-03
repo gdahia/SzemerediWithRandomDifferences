@@ -72,7 +72,7 @@ theorem exists_card_le_rpow_forall_exists_arithmeticProgression {k : ℕ} (hk : 
     exists_card_le_pow_log_forall_exists_arithmeticProgression hQ hk0 hn0 fun j _ ↦
       card_residues_modulus_le k j
   refine ⟨Y, hY, ?_, hAP⟩
-  apply (Nat.cast_le (α := ℝ).2 hcard).trans
+  grw [hcard]
   rw [Nat.cast_pow]
   apply (pow_log_succ_le_mul_rpow (sizeBound_ne_zero hk0) hQ hn0).trans
   exact mul_rpow_le_rpow_of_pow_le (sizeBound_le_modulus hk0) hQ (one_le_mul_saving hk) hn

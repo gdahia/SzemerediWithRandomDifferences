@@ -97,13 +97,15 @@ automation:
         Green–Ruzsa theorem with explicit c and n₀. Its intermediate lemmas were stated with
         sorry for review and proved afterwards, without raising heartbeats or adding axioms.
         Later requests covered naming and proof style, and then the main theorem of the
-        preprint, with Varnavides' theorem imported from DensityHalesJewett.
+        preprint, with Varnavides' theorem imported from DensityHalesJewett. Later, one
+        instruction to use grw where it improves the proof style.
   spend_usd: "not tracked"
   notes: >-
     Claude Code wrote the Lean code and this file under the direction of Gabriel Dahia, who
     then reviewed and edited every statement and proof with Claude Opus 5.5. The library and
     Solution.lean build without sorry. The solution theorem uses propext, Classical.choice
-    and Quot.sound only.
+    and Quot.sound only. Later, the agent replaced transitivity and monotonicity chains in 17
+    proofs with grw, and in one of them with gcongr. Every proof is checked by Lean.
 
 fidelity:
   divergences: >-

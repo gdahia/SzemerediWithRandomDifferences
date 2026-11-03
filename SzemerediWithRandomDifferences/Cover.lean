@@ -82,12 +82,10 @@ lemma card_cover_le (k n M : ℕ) (b : ℝ) (Y : Finset ℤ) :
 
 lemma card_cover_le_mul_exp (k n M : ℕ) (b : ℝ) {Y : Finset ℤ} {x : ℝ} (hY : #Y ≤ x) :
     (#(cover k n M b Y) : ℝ) ≤ (M + n : ℕ) * Real.exp x := by
-  apply (Nat.cast_le (α := ℝ).2 (card_cover_le k n M b Y)).trans
+  grw [card_cover_le k n M b Y]
   rw [Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
-  refine mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg _)
-  apply (pow_le_pow_left₀ zero_le_two
-    (by linarith [Real.add_one_le_exp 1] : (2 : ℝ) ≤ Real.exp 1) _).trans
-  rwa [← Real.exp_nat_mul, mul_one, Real.exp_le_exp]
+  grw [(by linarith [Real.add_one_le_exp 1] : (2 : ℝ) ≤ Real.exp 1), ← Real.exp_nat_mul, mul_one,
+    hY]
 
 /-- The proportion of common differences in a member of the cover. -/
 noncomputable def coverDensity (k : ℕ) (δ : ℝ) : ℝ :=

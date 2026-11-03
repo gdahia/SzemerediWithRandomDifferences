@@ -42,9 +42,9 @@ private lemma toNNReal_symm_pow_le (p : I) {m : ℕ} {b : ℝ} (hb : b ≤ m) :
   rw [← ENNReal.coe_pow, ← ENNReal.ofReal_coe_nnreal]
   apply ENNReal.ofReal_le_ofReal
   rw [NNReal.coe_pow, coe_toNNReal, coe_symm_eq]
-  apply (pow_le_pow_left₀ (sub_nonneg.2 (le_one p)) (Real.one_sub_le_exp_neg p) m).trans
-  rw [← Real.exp_nat_mul, Real.exp_le_exp]
-  nlinarith [nonneg p]
+  grw [Real.one_sub_le_exp_neg, ← Real.exp_nat_mul, Real.exp_le_exp]
+  · nlinarith [nonneg p]
+  · exact one_sub_nonneg p
 
 /-- A `p`-random subset of `u` is disjoint from a set containing at least `b` elements of `u`
 with probability at most `exp (-p * b)`. -/

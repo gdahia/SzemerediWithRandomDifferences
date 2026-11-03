@@ -93,11 +93,8 @@ lemma card_le_mul_card_image_mod {s : Finset ℕ} {k Q : ℕ} (hs : ∀ a ∈ s,
 lemma card_baseSet_le {Q k r : ℕ} (hr : ∀ j < k, #(residues Q j) ≤ r) :
     #(baseSet Q k) ≤ k ^ 2 * r := by
   refine (card_le_mul_card_image_mod fun a ↦ lt_of_mem_baseSet).trans ?_
-  rw [pow_two, mul_assoc]
-  apply Nat.mul_le_mul_left
-  apply (card_le_card (image_mod_baseSet_subset Q k)).trans
-  apply card_biUnion_le.trans
-  apply (sum_le_sum (g := fun _ ↦ r) ?_).trans_eq (by simp)
-  grind
+  grw [card_le_card (image_mod_baseSet_subset Q k), card_biUnion_le,
+    sum_le_sum (g := fun _ ↦ r) (by grind)]
+  simp [pow_two, mul_assoc]
 
 end ArithmeticKakeya

@@ -164,7 +164,7 @@ private lemma exp_half_le : Real.exp (1 / 2) ≤ 33 / 20 := by
 
 private lemma pow_five_le_pow_ceil {k : ℕ} (hk : k ≠ 0) :
     (k : ℝ) ^ 5 ≤ (33 / 20) ^ ⌈10 * Real.log k⌉₊ := by
-  apply le_trans _ (pow_le_pow_left₀ (Real.exp_pos _).le exp_half_le _)
+  grw [← exp_half_le]
   rw [← Real.exp_nat_mul, ← Real.exp_log (by positivity : (0 : ℝ) < k ^ 5), Real.exp_le_exp,
     Real.log_pow, Nat.cast_ofNat]
   linarith [Nat.le_ceil (10 * Real.log k)]
@@ -179,9 +179,9 @@ private lemma two_mul_four_pow_mul_pow_le {k n : ℕ} (hk : 2 ≤ k)
     (hn : ⌈10 * Real.log k⌉₊ = n + 2 + 2) : 2 * 4 ^ (n + 2) * k ^ 5 ≤ 5 * 7 ^ (n + 2) := by
   have h := pow_five_le_pow_ceil (by grind : k ≠ 0)
   rw [hn] at h
-  have h' := h.trans (pow_add_two_add_two_le n)
-  rw [div_pow, div_mul_div_comm, le_div_iff₀ (by positivity), mul_comm] at h'
-  exact_mod_cast h'
+  grw [pow_add_two_add_two_le n] at h
+  rw [div_pow, div_mul_div_comm, le_div_iff₀ (by positivity), mul_comm] at h
+  exact_mod_cast h
 
 /-- Each factor `2 * p / (p + 1)` of `modulus k / sizeBound k * k ^ 2` is at least `7 / 4`,
 except for `p = 3` and `p = 5`, while `k ^ 5 ≤ e ^ (m / 2) ≤ (33 / 20) ^ m` for
@@ -244,11 +244,11 @@ lemma log_modulus_le {k : ℕ} (hk : 3 ≤ k) :
 lemma modulus_le (k : ℕ) : modulus k ≤ ((10 * k + 2) ^ 2) ^ (10 * k) := by
   have hr : ⌈10 * Real.log k⌉₊ ≤ 10 * k := by
     rw [Nat.ceil_le, Nat.cast_mul, Nat.cast_ofNat]
-    exact mul_le_mul_of_nonneg_left (Real.log_le_self (Nat.cast_nonneg k)) (by norm_num)
+    grw [Real.log_le_self (Nat.cast_nonneg k)]
   apply (prod_le_prod fun i hi ↦ nth_prime_succ_le_sq (mem_range.1 hi)).trans
   rw [prod_const, card_range]
-  apply (Nat.pow_le_pow_right (by positivity) hr).trans
-  exact Nat.pow_le_pow_left (Nat.pow_le_pow_left (by grind) 2) _
+  gcongr
+  grind
 
 /-! ### The case `k = 3` -/
 
